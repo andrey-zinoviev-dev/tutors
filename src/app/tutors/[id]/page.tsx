@@ -1,3 +1,11 @@
-export default function TutorPage({ params }: { params: { id: string } }) {
-    return <h2>Вот тут будет урок конкретного учителя {params.id}</h2>;
+interface TutorPageProps {
+    params: Promise<{
+        id: string;
+    }>;
+}
+
+export default async function TutorPage({ params }: TutorPageProps) {
+
+    const { id } = await params;
+    return <h2>Вот тут будет урок конкретного учителя {id}</h2>;
 }
