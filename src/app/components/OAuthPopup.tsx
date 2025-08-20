@@ -2,45 +2,97 @@
 
 import { useState, useEffect, useRef } from "react";
 
+interface VKIDSDK {
+  Config: {
+    init: (config: VKIDConfig) => void;
+    ResponseMode: {
+      Callback: string;
+    };
+    Source: {
+      LOWCODE: string;
+    };
+  };
+  OneTap: new () => VKIDOneTap;
+  WidgetEvents: {
+    ERROR: string;
+  };
+  OneTapInternalEvents: {
+    LOGIN_SUCCESS: string;
+  };
+}
+
+interface VKIDConfig {
+  app: number;
+  redirectUrl: string;
+  responseMode: string;
+  source: string;
+  scope: string;
+}
+
+interface VKIDOneTap {
+  render: (options: { container: HTMLElement; showAlternativeLogin: boolean }) => VKIDOneTap;
+  on: (event: string, callback: (data: unknown) => void) => VKIDOneTap;
+}
+
 export default function OAuthPopup() {
   //test variable
   let isVKInitialized = false;
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('');
   const vkContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log(email, password);
-  }
+  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   console.log(email, password);
+  // }
 
-  const handleVKLogin = () => {
-    console.log('VK Login');
-  }
+  // const handleVKLogin = () => {
+  //   console.log('VK Login');
+  // }
 
-  const handleMailruLogin = () => {
-    console.log('Mailru Login');
-  }
+  // const handleMailruLogin = () => {
+  //   console.log('Mailru Login');
+  // }
 
   useEffect(() => {
     // VK ID SDK is already loaded globally
     // Just initialize it when component mounts
-    if (!isVKInitialized) {
-      initializeVKID();
-    }
+    // if (!isVKInitialized) {
+    //   initializeVKID();
+    // }
+    const loadVKIDSDK = () => {
+      if (typeof window !== 'undefined' && !('VKIDSDK' in window)) {
+        
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js';
+        script.async = true;
+        script.onload = () => {
+          initializeVKID();
+        };
+        script.onerror = (error) => {
+          console.error('❌ Failed to load VK ID SDK:', error);
+        };
+        
+        document.head.appendChild(script);
+      } else {
+        initializeVKID();
+      }
+    };
+
+    loadVKIDSDK();
   }, []);
 
   const initializeVKID = () => {
     // Check if VK ID SDK is available (loaded globally)
     if (typeof window !== 'undefined' && 'VKIDSDK' in window) {
-      const VKID = (window as any).VKIDSDK;
+      const VKID = (window as Window & { VKIDSDK: VKIDSDK }).VKIDSDK;
 
       VKID.Config.init({
         app: 54063777,
         redirectUrl: 'https://tutors-52is.vercel.app/user',
-        responseMode: VKID.ConfigResponseMode.Callback,
-        source: VKID.ConfigSource.LOWCODE,
+        responseMode: 'callback',
+        source: 'lowcode',
         scope: 'email',
       });
 
@@ -62,13 +114,13 @@ export default function OAuthPopup() {
     // }
   };
 
-  const vkidOnSuccess = (data: any) => {
+  const vkidOnSuccess = (data: unknown) => {
     console.log('VK ID Success:', data);
     // Handle successful authentication
     window.location.href = '/user';
   };
 
-  const vkidOnError = (error: any) => {
+  const vkidOnError = (error: unknown) => {
     console.error('VK ID Error:', error);
   };
 
