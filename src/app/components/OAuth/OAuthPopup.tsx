@@ -190,7 +190,7 @@ export default function OAuthPopup() {
         client_id: process.env.NEXT_PUBLIC_YANDEX_CLIENT_ID || '', // Replace with your actual Yandex client ID
         response_type: 'token',
         redirect_uri: 'https://tutors-brown.vercel.app/user',
-        scope: 'login:email login:info'
+        scope: 'login:email'
       };
 
       // Token page origin (your app's domain)
@@ -242,24 +242,6 @@ export default function OAuthPopup() {
     console.error('Yandex ID Error:', error);
   };
 
-  //Yandex ID
-  // window.YaAuthSuggest.init(
-  //   oauthQueryParams,
-  //   tokenPageOrigin,
-  //   {
-  //     view: "button",
-  //     parentId: "buttonContainerId",
-  //     buttonSize: 'm',
-  //     buttonView: 'main',
-  //     buttonTheme: 'light',
-  //     buttonBorderRadius: "0",
-  //     buttonIcon: 'ya',
-  //   }
-  // )
-  // .then(({handler}) => handler())
-  // .then(data => console.log('Сообщение с токеном', data))
-  // .catch(error => console.log('Обработка ошибки', error))
-
   return (
       <div className={styles.oauthPopup}>
         <h2>
@@ -274,32 +256,14 @@ export default function OAuthPopup() {
         <div className={styles.or}>
           <span className={styles.orText}>или</span>
         </div>
-        {/* VK ID Widget Container */}
         <div ref={vkContainerRef}>
-          {/* VK ID will render here */}
         </div>
         <div 
             ref={yandexContainerRef} 
             id="yandexButtonContainer"
             className={styles.oauthProvider}
           >
-            {/* Yandex ID will render here */}
           </div>
-
-        {/* Alternative Login Methods */}
-        {/* <div>
-          <button
-            onClick={handleVKLogin}
-          >
-            Войти через VK (Альтернативный)
-          </button>
-
-          <button
-            onClick={handleMailruLogin}
-          >
-            Войти через Mail.ru
-          </button>
-        </div> */}
 
         <div>
           <p>
