@@ -38,13 +38,53 @@ interface VKIDOneTap {
   on: (event: string, callback: (data: unknown) => void) => VKIDOneTap;
 }
 
+// Yandex ID interfaces
+interface YaAuthSuggest {
+  init: (oauthQueryParams: YandexOAuthParams, tokenPageOrigin: string, options: YandexWidgetOptions) => Promise<YandexAuthResult>;
+}
+
+interface YandexOAuthParams {
+  client_id: string;
+  response_type: 'token' | 'code';
+  redirect_uri: string;
+  scope: string;
+  state?: string;
+}
+
+interface YandexWidgetOptions {
+  view: 'button';
+  parentId: string;
+  buttonSize: 's' | 'm' | 'l';
+  buttonView: 'main' | 'secondary';
+  buttonTheme: 'light' | 'dark';
+  buttonBorderRadius: string;
+  buttonIcon: 'ya' | 'none';
+}
+
+interface YandexAuthResult {
+  handler: () => Promise<YandexAuthData>;
+}
+
+interface YandexAuthData {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  state?: string;
+  user_id?: string;
+  email?: string;
+  real_name?: string;
+  display_name?: string;
+  avatar?: string;
+}
+
 export default function OAuthPopup() {
   //test variable
   let isVKInitialized = false;
-
+  let isYandexInitialized = false;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const vkContainerRef = useRef<HTMLDivElement>(null);
+  const yandexContainerRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -84,7 +124,20 @@ export default function OAuthPopup() {
       }
     };
 
+    const loadYandexIDSDK = () => {
+      if (typeof window !== 'undefined' && !('YaAuthSuggest' in window)) {
+        const script = document.createElement('script');
+        script.src = 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js';
+        script.async = true;
+        document.head.appendChild(script);
+        script.onload = () => {
+          initializeYandexID();
+        };
+      };
+    };
+
     loadVKIDSDK();
+    loadYandexIDSDK();
   }, []);
 
   const initializeVKID = () => {
@@ -128,6 +181,85 @@ export default function OAuthPopup() {
     console.error('VK ID Error:', error);
   };
 
+  const initializeYandexID = () => {
+    if (typeof window !== 'undefined' && 'YaAuthSuggest' in window && yandexContainerRef.current) {
+      const YaAuthSuggest = (window as Window & { YaAuthSuggest: YaAuthSuggest }).YaAuthSuggest;
+      
+      // OAuth query parameters
+      const oauthQueryParams: YandexOAuthParams = {
+        client_id: 'YOUR_YANDEX_CLIENT_ID', // Replace with your actual Yandex client ID
+        response_type: 'token',
+        redirect_uri: 'https://tutors-brown.vercel.app/user',
+        scope: 'login:email login:info'
+      };
+
+      // Token page origin (your app's domain)
+      const tokenPageOrigin = 'https://tutors-brown.vercel.app';
+
+      // Widget options
+      const widgetOptions: YandexWidgetOptions = {
+        view: "button",
+        parentId: yandexContainerRef.current.id,
+        buttonSize: 'm',
+        buttonView: 'main',
+        buttonTheme: 'light',
+        buttonBorderRadius: "0",
+        buttonIcon: 'ya',
+      };
+
+      // Initialize Yandex ID widget
+      YaAuthSuggest.init(oauthQueryParams, tokenPageOrigin, widgetOptions)
+        .then(({handler}) => {
+          console.log('Yandex ID widget initialized successfully');
+          // Store the handler for later use if needed
+          return handler();
+        })
+        .then(data => {
+          console.log('Yandex ID Success - Token received:', data);
+          yandexOnSuccess(data);
+        })
+        .catch(error => {
+          console.log('Yandex ID Error:', error);
+          yandexOnError(error);
+        });
+      
+      isYandexInitialized = true;
+    }
+  };
+
+  const yandexOnSuccess = (data: YandexAuthData) => {
+    console.log('Yandex ID Success:', data);
+    // Handle successful authentication
+    // You can access the access token from data.access_token
+    if (data.access_token) {
+      // Store the token or send it to your backend
+      console.log('Access token:', data.access_token);
+    }
+    window.location.href = '/user';
+  };
+
+  const yandexOnError = (error: unknown) => {
+    console.error('Yandex ID Error:', error);
+  };
+
+  //Yandex ID
+  // window.YaAuthSuggest.init(
+  //   oauthQueryParams,
+  //   tokenPageOrigin,
+  //   {
+  //     view: "button",
+  //     parentId: "buttonContainerId",
+  //     buttonSize: 'm',
+  //     buttonView: 'main',
+  //     buttonTheme: 'light',
+  //     buttonBorderRadius: "0",
+  //     buttonIcon: 'ya',
+  //   }
+  // )
+  // .then(({handler}) => handler())
+  // .then(data => console.log('Сообщение с токеном', data))
+  // .catch(error => console.log('Обработка ошибки', error))
+
   return (
       <div className={styles.oauthPopup}>
         <h2>
@@ -146,6 +278,13 @@ export default function OAuthPopup() {
         <div ref={vkContainerRef}>
           {/* VK ID will render here */}
         </div>
+        <div 
+            ref={yandexContainerRef} 
+            id="yandexButtonContainer"
+            className={styles.oauthProvider}
+          >
+            {/* Yandex ID will render here */}
+          </div>
 
         {/* Alternative Login Methods */}
         {/* <div>
