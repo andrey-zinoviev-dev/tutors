@@ -1,0 +1,50 @@
+.oauthPopup {
+    max-width: 360px;
+    margin: 0 auto;
+    background-color: #2a2a2d;
+    padding: 15px;
+    border-radius: 15px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 12px
+  /* position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1); */
+}
+
+.or {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+  color: #808080;
+  position: relative;
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    width: 50%;
+    height: 1px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #808080;
+    z-index: 1;
+  }
+  &::before {
+    left: 0;
+  }
+  &::after {
+    right: 0;
+  }
+  .orText {
+    background-color: #2a2a2d;
+    padding: 0 15px;
+    position: relative;
+    z-index: 2;
+  }
+}

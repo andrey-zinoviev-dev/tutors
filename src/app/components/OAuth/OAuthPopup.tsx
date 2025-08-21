@@ -1,6 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from "react";
+import styles from './page.module.css';
+import Input from "../Input/Input";
+import Form from "../Form/Form";
+import SubmitButton from "../SubmitButton/SubmitButton";
 
 interface VKIDSDK {
   Config: {
@@ -38,14 +42,14 @@ export default function OAuthPopup() {
   //test variable
   let isVKInitialized = false;
 
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const vkContainerRef = useRef<HTMLDivElement>(null);
 
-  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   console.log(email, password);
-  // }
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(email, password);
+  }
 
   // const handleVKLogin = () => {
   //   console.log('VK Login');
@@ -70,9 +74,9 @@ export default function OAuthPopup() {
         script.onload = () => {
           initializeVKID();
         };
-        script.onerror = (error) => {
-          console.error('❌ Failed to load VK ID SDK:', error);
-        };
+        // script.onerror = (error) => {
+        //   console.error('❌ Failed to load VK ID SDK:', error);
+        // };
         
         document.head.appendChild(script);
       } else {
@@ -125,12 +129,19 @@ export default function OAuthPopup() {
   };
 
   return (
-    <div>
-      <div>
+      <div className={styles.oauthPopup}>
         <h2>
           Войти в аккаунт
         </h2>
-        
+
+        <Form onSubmit={handleSubmit}>
+          <Input type="text" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+          <Input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
+          <SubmitButton type="submit">Войти</SubmitButton>
+        </Form>
+        <div className={styles.or}>
+          <span className={styles.orText}>или</span>
+        </div>
         {/* VK ID Widget Container */}
         <div ref={vkContainerRef}>
           {/* VK ID will render here */}
@@ -157,6 +168,5 @@ export default function OAuthPopup() {
           </p>
         </div>
       </div>
-    </div>
   );
 }

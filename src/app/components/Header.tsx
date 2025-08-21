@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import OAuthPopup from "./OAuthPopup";
+import OAuthPopup from "./OAuth/OAuthPopup";
 
 export default function Header() {
   const [ oauthPopupOpened, setOauthPopupOpened ] = useState(false);
