@@ -94,7 +94,7 @@ export default function OAuthPopup() {
 
       VKID.Config.init({
         app: 54063777,
-        redirectUrl: 'https://tutors-52is.vercel.app/user',
+        redirectUrl: 'https://tutors-brown.vercel.app/user',
         responseMode: 'callback',
         source: 'lowcode',
         scope: 'email',
