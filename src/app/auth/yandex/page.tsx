@@ -1,11 +1,6 @@
 'use client';
 
-import { useEffect } from "react";
-
-// Define the type for YaSendSuggestToken
-// interface YandexSDK {
-//   YaSendSuggestToken: (domain: string, options: { flag: boolean }) => void;
-// }
+import { useEffect, useState } from "react";
 
 // Extend Window interface to include Yandex SDK
 declare global {
@@ -15,18 +10,49 @@ declare global {
 }
 
 export default function YandexAuthPage() {
+    const [isSDKLoaded, setIsSDKLoaded] = useState(false);
+    
     useEffect(() => {
-        if (typeof window !== 'undefined' && 'YaSendSuggestToken' in window) {
-            
-            // Call YaSendSuggestToken with proper typing
-            window.YaSendSuggestToken(
-                'https://tutors-brown.vercel.app', // Your domain
-                {
-                    flag: true
+        const loadYandexSDK = () => {
+            if (typeof window !== 'undefined' && !('YaSendSuggestToken' in window)) {
+                const script = document.createElement('script');
+                script.src = 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-token-with-polyfills-latest.js';
+                script.async = true;
+                script.onload = () => {
+                    console.log('Yandex SDK loaded successfully');
+                    setIsSDKLoaded(true);
+                    
+                    // Call YaSendSuggestToken after SDK is loaded
+                    if (window.YaSendSuggestToken) {
+                        window.YaSendSuggestToken(
+                            'https://tutors-brown.vercel.app',
+                            { flag: true }
+                        );
+                    }
+                };
+                script.onerror = (error) => {
+                    console.error('Failed to load Yandex SDK:', error);
+                };
+                
+                document.head.appendChild(script);
+            } else {
+                // SDK already available
+                setIsSDKLoaded(true);
+                if (window.YaSendSuggestToken) {
+                    window.YaSendSuggestToken(
+                        'https://tutors-brown.vercel.app',
+                        { flag: true }
+                    );
                 }
-            );
-        }
+            }
+        };
+        
+        loadYandexSDK();
     }, []);
     
-    return <div>YandexAuthPage</div>
+    return (
+        <div>
+            {isSDKLoaded ? 'Processing Yandex authentication...' : 'Loading Yandex SDK...'}
+        </div>
+    );
 }
