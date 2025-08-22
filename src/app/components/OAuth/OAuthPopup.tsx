@@ -188,7 +188,7 @@ export default function OAuthPopup() {
       // OAuth query parameters
       const oauthQueryParams: YandexOAuthParams = {
         client_id: process.env.NEXT_PUBLIC_YANDEX_CLIENT_ID || '', // Replace with your actual Yandex client ID
-        response_type: 'token',
+        response_type: 'code',
         redirect_uri: 'https://tutors-brown.vercel.app/auth/yandex',
         scope: 'login:email'
       };
