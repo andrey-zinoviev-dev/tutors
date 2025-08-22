@@ -184,7 +184,6 @@ export default function OAuthPopup() {
   const initializeYandexID = () => {
     if (typeof window !== 'undefined' && 'YaAuthSuggest' in window && yandexContainerRef.current) {
       const YaAuthSuggest = (window as Window & { YaAuthSuggest: YaAuthSuggest }).YaAuthSuggest;
-      
       // OAuth query parameters
       const oauthQueryParams: YandexOAuthParams = {
         client_id: process.env.NEXT_PUBLIC_YANDEX_CLIENT_ID || '', // Replace with your actual Yandex client ID
@@ -194,6 +193,7 @@ export default function OAuthPopup() {
       };
 
       // Token page origin (your app's domain)
+      // const tokenPageOrigin = 'https://tutors-brown.vercel.app';
       const tokenPageOrigin = 'https://tutors-brown.vercel.app';
 
       // Widget options
