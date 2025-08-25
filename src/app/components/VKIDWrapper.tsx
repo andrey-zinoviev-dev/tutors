@@ -75,7 +75,7 @@ export default function VKIDWrapper() {
 
         VKID.Config.init({
           app: parseInt(process.env.NEXT_PUBLIC_AUTH_VK_ID || "0"),
-          redirectUrl: "https://tutors-brown.vercel.app//user",
+          redirectUrl: "https://tutors-brown.vercel.app/user",
           responseMode: "callback",
           source: "lowcode",
           scope: "email",

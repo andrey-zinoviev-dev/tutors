@@ -23,21 +23,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return `${baseUrl}/user`;
     },
   },
-  debug: true,
-  logger: {
-    error(error) {
-      console.error("AUTH ERROR", error);
-      // Log the cause to see what's actually failing
-      if (error.cause) {
-        console.error("AUTH ERROR CAUSE:", error.cause);
-      }
-    },
-    debug(code, meta) {
-      console.log("AUTH DEBUG", code, meta);
-    },
+  // debug: true,
+  // logger: {
+  //   error(error) {
+  //     console.error("AUTH ERROR", error);
+  //     // Log the cause to see what's actually failing
+  //     if (error.cause) {
+  //       console.error("AUTH ERROR CAUSE:", error.cause);
+  //     }
+  //   },
+  //   debug(code, meta) {
+  //     console.log("AUTH DEBUG", code, meta);
+  //   },
 
-    warn(code) {
-      console.warn("AUTH WARN", code);
-    },
-  },
+  //   warn(code) {
+  //     console.warn("AUTH WARN", code);
+  //   },
+  // },
 });

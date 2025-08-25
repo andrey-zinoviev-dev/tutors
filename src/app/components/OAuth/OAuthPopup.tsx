@@ -91,7 +91,7 @@ export default function OAuthPopup() {
         <button type="submit">Yandex</button>
       </form>
 
-      <VKIDWrapper />
+      {/* <VKIDWrapper /> */}
 
       {/* <form
         action={async () => {
