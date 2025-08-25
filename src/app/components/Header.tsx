@@ -1,14 +1,14 @@
-"use client";
+// "use client";
 import { useState } from "react";
 import OAuthPopup from "./OAuth/OAuthPopup";
 
 export default function Header() {
-  const [ oauthPopupOpened, setOauthPopupOpened ] = useState(false);
+  // const [ oauthPopupOpened, setOauthPopupOpened ] = useState(false);
   return (
     <header className="flex justify-between items-center p-4">
       <h1>Header</h1>
-      <button onClick={() => setOauthPopupOpened(true)}>Login</button>
-      {oauthPopupOpened && <OAuthPopup />}
+      {/* <button onClick={() => setOauthPopupOpened(true)}>Login</button> */}
+      <OAuthPopup />
     </header>
   );
 }
