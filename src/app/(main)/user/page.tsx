@@ -3,8 +3,8 @@ import Image from "next/image";
 import { auth } from "@/auth";
 
 export default async function AccountPage() {
-  const session = await auth();
-  console.log(session);
+  // const session = await auth();
+  // console.log(session);
   return (
     <div>
       <Link href="/">Главная</Link>

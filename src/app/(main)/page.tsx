@@ -1,9 +1,9 @@
 // import Image from "next/image";
 import styles from "./page.module.css";
-import TutorsSearch from "./components/TutorsSearch";
-import PopularCategories from "./components/PopularCategories";
-import HowWorks from "./components/HowWorks";
-import PopularTutors from "./components/PopularTutors";
+import TutorsSearch from "../components/TutorsSearch";
+import PopularCategories from "../components/PopularCategories";
+import HowWorks from "../components/HowWorks";
+import PopularTutors from "../components/PopularTutors";
 
 export default function Home() {
   return (

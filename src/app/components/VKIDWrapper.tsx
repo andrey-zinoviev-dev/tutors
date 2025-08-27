@@ -24,8 +24,8 @@ interface VKIDSDK {
 interface VKIDConfig {
   app: number;
   redirectUrl: string;
-  responseMode: string;
-  source: string;
+  // responseMode: string;
+  // source: string;
   scope: string;
 }
 
@@ -64,21 +64,27 @@ export default function VKIDWrapper() {
     };
 
     const initializeVKID = () => {
-      console.log("Initializing VKID...");
+      // console.log("Initializing VKID...");
       if (
         typeof window !== "undefined" &&
         "VKIDSDK" in window &&
         vkContainerRef.current
       ) {
-        console.log("VKID SDK found, initializing...");
+        // console.log("VKID SDK found, initializing...");
         const VKID = (window as Window & { VKIDSDK: VKIDSDK }).VKIDSDK;
 
+        // VKID.Config.init({
+        //   app: parseInt(process.env.NEXT_PUBLIC_AUTH_VK_ID || "0"),
+        //   redirectUrl: "https://tutors-brown.vercel.app/user",
+        //   responseMode: "callback",
+        //   source: "lowcode",
+        //   scope: "email",
+        // });
+
         VKID.Config.init({
-          app: parseInt(process.env.NEXT_PUBLIC_AUTH_VK_ID || "0"),
-          redirectUrl: "https://tutors-brown.vercel.app/user",
-          responseMode: "callback",
-          source: "lowcode",
-          scope: "email",
+          app: 54063777,
+          redirectUrl: 'http://localhost/user',
+          scope: 'email',
         });
 
         const oneTap = new VKID.OneTap();
@@ -105,5 +111,6 @@ export default function VKIDWrapper() {
     //   }
     // };
   }, []);
+
   return <div ref={vkContainerRef}></div>;
 }

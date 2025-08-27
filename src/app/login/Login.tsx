@@ -1,10 +1,11 @@
 import { useState, useRef } from "react";
 import styles from "./page.module.css";
-import Input from "../Input/Input";
-import Form from "../Form/Form";
-import SubmitButton from "../SubmitButton/SubmitButton";
+// import Input from "../../components/Input/Input";
+// import Form from "../../components/Form/Form";
+// import SubmitButton from "../../components/SubmitButton/SubmitButton";
 import { signIn } from "@/auth";
-import VKIDWrapper from "../VKIDWrapper";
+import VKIDWrapper from "@/app/components/VKIDWrapper";
+import YandexIDWrapper from "@/app/components/YandexIDWrapper";
 
 // interface VKIDSDK {
 //   Config: {
@@ -82,6 +83,9 @@ export default function OAuthPopup() {
     <div className={styles.oauthPopup}>
       <h2>Войти в аккаунт</h2>
 
+      <YandexIDWrapper />
+      <VKIDWrapper />
+{/* 
       <form
         action={async () => {
           "use server";
@@ -89,7 +93,7 @@ export default function OAuthPopup() {
         }}
       >
         <button type="submit">Yandex</button>
-      </form>
+      </form> */}
 
       {/* <VKIDWrapper /> */}
 
