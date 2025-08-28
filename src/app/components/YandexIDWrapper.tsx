@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useGetYandexAuthTokenQuery } from "../../lib/features/apiSlice";
 
 interface YaAuthSuggest {
   init: (
@@ -47,6 +48,10 @@ interface YaAuthWindow extends Window {
 
 export default function YandexIDWrapper() {
     const yandexIDContainerRef = useRef<HTMLDivElement | null>(null);
+    const [accessToken, setAccessToken] = useState<string | null>(null);
+    const { data: userInfo, isLoading, error } = useGetYandexAuthTokenQuery({code: accessToken || ""}, {
+        skip: !accessToken, // This prevents the query from running until accessToken exists
+    });
 
     useEffect(() => {
         const script = document.createElement("script");
@@ -71,12 +76,22 @@ export default function YandexIDWrapper() {
                     buttonBorderRadius: 0
                  })
                 .then(({ handler }: YaAuthResult) => handler())
-                 .then((data: YaAuthData) => console.log('Сообщение с токеном', data))
+                 .then((data: YaAuthData) => {
+                
+                  const { access_token } = data;
+                  setAccessToken(access_token);
+                 })
                  .catch((error: Error) => console.log('Обработка ошибки', error));
             }
         };
         document.head.appendChild(script);
     }, []);
+
+    useEffect(() => {
+        if (userInfo) {
+            console.log('User info received:', userInfo);
+        }
+    }, [userInfo]);
 
     return (
         <div id="yandex-id-container" ref={yandexIDContainerRef}>

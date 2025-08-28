@@ -3,18 +3,27 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const apiSlice = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: '/' }),
     endpoints: (builder) => ({
-        getYandexAuthToken: builder.mutation<{ access_token: string }, { code: string }>({
+        getYandexAuthToken: builder.query<{ access_token: string }, { code: string }>({
             query: ({ code }) => ({
-                url: 'https://oauth.yandex.ru',
+                url: 'https://login.yandex.ru/info?',
+                headers: {
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `OAuth ${code}`
+                },
+                method: 'GET',
+                // body: { code },
+            }),
+        }),
+        getVKAuthToken: builder.query<{ access_token: string }, { code: string }>({
+            query: ({ code }) => ({
+                url: 'https://id.vk.com/oauth2/user_info',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Basic ${btoa(`${process.env.NEXT_PUBLIC_YANDEX_CLIENT_ID}:${process.env.NEXT_PUBLIC_YANDEX_CLIENT_SECRET}`)}`,
+                    'Authorization': `OAuth ${code}`
                 },
-                method: 'POST',
-                body: { code },
             }),
         }),
     }),
 });
 
-export const { useGetYandexAuthTokenMutation } = apiSlice;
+export const { useGetYandexAuthTokenQuery } = apiSlice;
