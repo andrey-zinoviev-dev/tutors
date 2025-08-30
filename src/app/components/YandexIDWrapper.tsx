@@ -2,6 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useGetYandexAuthTokenQuery } from "../../lib/features/apiSlice";
+import { setUser } from "@/lib/features/userSlice";
+// import { useAppDispatch } from "@/lib/hooks";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 
 interface YaAuthSuggest {
   init: (
@@ -46,19 +50,28 @@ interface YaAuthWindow extends Window {
   YaAuthSuggest: YaAuthSuggest;
 }
 
+interface YaUserInfo {
+  default_email: string;
+  id: string;
+  client_id: number;
+  login: string;
+  psuid: string;
+}
+
 export default function YandexIDWrapper() {
     const yandexIDContainerRef = useRef<HTMLDivElement | null>(null);
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const { data: userInfo, isLoading, error } = useGetYandexAuthTokenQuery({code: accessToken || ""}, {
         skip: !accessToken, // This prevents the query from running until accessToken exists
     });
-
+    const dispatch = useDispatch();
+    const router = useRouter();
     useEffect(() => {
         const script = document.createElement("script");
         script.src = "https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js";
         script.async = true;
         script.onload = () => {
-            console.log("YandexIDWrapper mounted");
+            // console.log("YandexIDWrapper mounted");
             
             if ('YaAuthSuggest' in window) {
                 const YaAuthSuggest = (window as YaAuthWindow).YaAuthSuggest;
@@ -77,7 +90,7 @@ export default function YandexIDWrapper() {
                  })
                 .then(({ handler }: YaAuthResult) => handler())
                  .then((data: YaAuthData) => {
-                
+                  // console.log(data);
                   const { access_token } = data;
                   setAccessToken(access_token);
                  })
@@ -89,7 +102,19 @@ export default function YandexIDWrapper() {
 
     useEffect(() => {
         if (userInfo) {
-            console.log('User info received:', userInfo);
+          const userData = userInfo as unknown as YaUserInfo;
+
+          const unifiedUser = {
+            id: userData.id || '',
+            email: userData.default_email || '',
+            first_name: userData.login || '', // Use login as first name
+            last_name: '', // Yandex doesn't provide last name
+            provider: 'yandex' as const,
+        };
+        
+        // console.log('Unified Yandex user data:', unifiedUser);
+        dispatch(setUser(unifiedUser));
+        router.push("/user");
         }
     }, [userInfo]);
 

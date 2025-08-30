@@ -1,22 +1,23 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { auth } from "@/auth";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 
-export default async function AccountPage() {
-  // const session = await auth();
-  // console.log(session);
+export default function AccountPage() {
+  const user = useSelector((state: RootState) => state.user.user);
+  console.log(user);
+  if (!user) {
+    return <div>Loading user data...</div>;
+  }
+  
   return (
     <div>
       <Link href="/">Главная</Link>
-      {/* <Image
-        src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"
-        alt="Account"
-        width={100}
-        height={100}
-      /> */}
-      <span>Name</span>
+      <span>User ID: {user.id}</span>
       <div>
-        <span>У вас пройдено 10 уроков</span>
+        <span>У вас пройдено 10 уроков, {user.email}</span>
       </div>
     </div>
   );

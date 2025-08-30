@@ -23,7 +23,14 @@ export const apiSlice = createApi({
                 },
             }),
         }),
+        createSession: builder.mutation<{ success: boolean }, { id: string, provider: string }>({
+            query: ({ id, provider }) => ({
+                url: '/api/auth/session',
+                method: 'POST',
+                body: { id, provider },
+            }),
+        }), 
     }),
 });
 
-export const { useGetYandexAuthTokenQuery } = apiSlice;
+export const { useGetYandexAuthTokenQuery, useCreateSessionMutation } = apiSlice;

@@ -1,6 +1,12 @@
 "use client";
 
+import { setUser } from "@/lib/features/userSlice";
+import { useAppDispatch } from "@/lib/hooks";
+import { useDispatch } from "react-redux";
 import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { handleVKAuth } from "@/app/actions/oauth";
+import { useCreateSessionMutation } from "@/lib/features/apiSlice";
 
 interface VKIDSDK {
   Config: {
@@ -57,20 +63,37 @@ interface VKAuthResult {
   expires_in: number;
 }
 
+interface VKUserInfo {
+  user: {
+    email: string;
+    id: string;
+    user_id: number;
+    first_name: string;
+    last_name: string;
+    avatar: string;
+    birthday: string;
+    sex: number;
+    verified: boolean;
+  }
+}
+
 export default function VKIDWrapper() {
   const vkContainerRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
+  const [createSession] = useCreateSessionMutation();
+  // const router = useRouter();
   useEffect(() => {
-    console.log("VKIDWrapper mounted");
+    // console.log("VKIDWrapper mounted");
 
     const loadVKIDSDK = () => {
-      console.log("Loading VKID SDK...");
+      // console.log("Loading VKID SDK...");
       if (typeof window !== "undefined" && !("VKIDSDK" in window)) {
         // SDK not loaded yet, load it first
         const script = document.createElement("script");
         script.src = "https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js";
         script.async = true;
         script.onload = () => {
-          console.log("VKID SDK loaded");
+          // console.log("VKID SDK loaded");
           initializeVKID();
         };
         script.onerror = (error) => {
@@ -80,29 +103,6 @@ export default function VKIDWrapper() {
       } else {
         // SDK already loaded, initialize directly
         initializeVKID();
-      }
-    };
-
-    const vkidOnError = (error: unknown) => {
-      console.error("VK ID Error:", error);
-    };
-
-    const vkidOnSuccess = (data: VKAuthResult) => {
-      console.log('VK Auth Success:', data);
-      
-      if (data.access_token) {
-        console.log('Got VK access token:', data.access_token);
-        
-        // Set the access token to trigger the RTK Query
-        // setAccessToken(data.access_token);
-        
-        // Store the token in localStorage for persistence
-        // localStorage.setItem('vkToken', data.access_token);
-        
-        // Optionally redirect after successful authentication
-        // setTimeout(() => {
-        //   window.location.href = "/user";
-        // }, 1000);
       }
     };
 
@@ -126,7 +126,7 @@ export default function VKIDWrapper() {
 
         VKID.Config.init({
           app: 54063777,
-          redirectUrl: 'http://localhost/user',
+          redirectUrl: 'http://localhost/auth/vk',
           scope: 'email',
           responseMode: 'callback',
           source: 'lowcode',
@@ -150,33 +150,39 @@ export default function VKIDWrapper() {
           });
         
           function vkidOnSuccess(data: VKAuthResult) {
-            console.log(data);
+            // console.log(data);
             VKID.Auth.userInfo(data.access_token)
               .then((userInfo) => {
-                console.log(userInfo);
-                window.location.href = "/user";
+                const userData = userInfo as VKUserInfo;
+                const unifiedUser = {
+                  id: userData.user.user_id?.toString() || '',
+                  email: userData.user.email || '',
+                  first_name: userData.user.first_name || '',
+                  last_name: userData.user.last_name || '',
+                  provider: 'vk' as const,
+              };
+              
+              // console.log('Unified VK user data:', unifiedUser);
+              dispatch(setUser(unifiedUser));
+              createSession({id: unifiedUser.id, provider: unifiedUser.provider})
+              .unwrap()
+              .then((res) => {
+                console.log(res);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+              // handleVKAuth({id: unifiedUser.id, provider: unifiedUser.provider});
+                // dispatch(setUser(userData.user));
+                // router.push("/user");
               })
               // .catch(vkidOnError);
             // Обработка полученного результата
           }
         
-          function vkidOnError(error) {
+          function vkidOnError(error: unknown) {
             // Обработка ошибки
           }
-        
-        
-          // .on(VKID.WidgetEvents.ERROR, vkidOnError)
-          // .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, function (payload: VKLoginPayload) {
-          //   const code = payload.code;
-          //   const deviceId = payload.device_id;
-
-          //   console.log('VK ID Success - Code received:', code);
-          //   console.log('Device ID:', deviceId);
-
-          //   VKID.Auth.exchangeCode(code, deviceId)
-          //     .then(vkidOnSuccess)
-          //     .catch(vkidOnError);
-          // });
       } else {
         console.log("VKID SDK not found or container not ready");
       }
