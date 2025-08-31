@@ -30,7 +30,13 @@ export const apiSlice = createApi({
                 body: { id, provider },
             }),
         }), 
+        decodeSession: builder.query<{id: string, provider: string}, void>({
+            query: () => ({
+                url: '/api/auth/session',
+                method: 'GET',
+            }),
+        }),
     }),
 });
 
-export const { useGetYandexAuthTokenQuery, useCreateSessionMutation } = apiSlice;
+export const { useGetYandexAuthTokenQuery, useCreateSessionMutation, useDecodeSessionQuery } = apiSlice;

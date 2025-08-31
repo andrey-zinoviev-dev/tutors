@@ -4,7 +4,6 @@ import { UnifiedUser } from '../features/userSlice';
 import { cookies } from 'next/headers'
 
 const secretKey = process.env.SESSION_SECRET;
-console.log('secretKey', secretKey);
 const encodedKey = new TextEncoder().encode(secretKey);
 
 export async function encrypt(payload: {user: {id: string, provider: string}, expiresAt: Date}) {
@@ -43,4 +42,22 @@ export async function createSession({id, provider}: {id: string, provider: strin
       sameSite: 'lax',
       path: '/',
     })
-  }
+};
+
+export async function getDecodedSession() {
+    const cookieStore = await cookies()
+    const session = cookieStore.get('session')?.value;
+    const decodedSession = await decrypt(session);
+    return decodedSession;
+}
+
+export async function deleteSession() {
+    const cookieStore = await cookies()
+    cookieStore.delete('session')
+}
+
+export async function checkSession() {
+    const cookieStore = await cookies()
+    const session = cookieStore.get('session')?.value;
+    return session;
+}

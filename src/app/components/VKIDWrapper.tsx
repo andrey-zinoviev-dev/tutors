@@ -1,11 +1,11 @@
 "use client";
 
 import { setUser } from "@/lib/features/userSlice";
-import { useAppDispatch } from "@/lib/hooks";
+// import { useAppDispatch } from "@/lib/hooks";
 import { useDispatch } from "react-redux";
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { handleVKAuth } from "@/app/actions/oauth";
+// import { handleVKAuth } from "@/app/actions/oauth";
 import { useCreateSessionMutation } from "@/lib/features/apiSlice";
 
 interface VKIDSDK {
@@ -81,7 +81,7 @@ export default function VKIDWrapper() {
   const vkContainerRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const [createSession] = useCreateSessionMutation();
-  // const router = useRouter();
+  const router = useRouter();
   useEffect(() => {
     // console.log("VKIDWrapper mounted");
 
@@ -168,6 +168,7 @@ export default function VKIDWrapper() {
               .unwrap()
               .then((res) => {
                 console.log(res);
+                router.push("/user");
               })
               .catch((err) => {
                 console.log(err);
