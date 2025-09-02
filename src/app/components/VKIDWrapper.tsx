@@ -74,7 +74,7 @@ interface VKUserInfo {
     birthday: string;
     sex: number;
     verified: boolean;
-  }
+  },
 }
 
 export default function VKIDWrapper() {
@@ -159,16 +159,18 @@ export default function VKIDWrapper() {
                   email: userData.user.email || '',
                   first_name: userData.user.first_name || '',
                   last_name: userData.user.last_name || '',
-                  provider: 'vk' as const,
+                  provider: 'vk' as string,
+                  // access_token: data.access_token || '',
+                  // refresh_token: data.refresh_token || '',
               };
               
               // console.log('Unified VK user data:', unifiedUser);
-              dispatch(setUser(unifiedUser));
-              createSession({id: unifiedUser.id, provider: unifiedUser.provider})
+              // dispatch(setUser(unifiedUser));
+              createSession({user: unifiedUser, tokens: {access_token: data.access_token, expires_in: data.expires_in, refresh_token: data.refresh_token}})
               .unwrap()
               .then((res) => {
-                console.log(res);
-                router.push("/user");
+                // console.log(res);
+                // router.push("/user");
               })
               .catch((err) => {
                 console.log(err);

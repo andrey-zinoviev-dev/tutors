@@ -1,0 +1,55 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { decrypt } from "./lib/sessions/sessions";
+
+export default async function middleware(request: NextRequest) {
+
+    // const accessToken = request.cookies.get("accessTokenCookie")?.value;
+    const expiresIn = request.cookies.get("expiresInCookie")?.value;
+    const tenMinutes = 10 * 60 * 1000;
+    // console.log(expiresIn);
+    const refreshToken = request.cookies.get("refreshTokenCookie")?.value;
+
+    if(!expiresIn || !refreshToken) {
+        console.log('middleware expiresIn or refreshToken is invalid');
+        return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    // //decoded tokens
+    // const decodedAccessToken = await decrypt(accessToken);
+    // // console.log(decodedAccessToken);
+    const { expires_at } = await decrypt(expiresIn) as {expires_at: number};
+    const { refresh_token } = await decrypt(refreshToken) as { refresh_token: string };
+    // console.log('middleware decodedExpiresIn', decodedExpiresIn);
+
+    //check if expiresIn is valid
+    const now = Date.now();
+    
+    if(now > expires_at - tenMinutes) {
+        console.log('middleware expires_at is invalid');
+        console.log('refresh_token here');
+        // return NextResponse.redirect(new URL('/login', request.url));
+    } else {
+        console.log('middleware expires_at is valid');
+    }
+    
+    return NextResponse.next();
+
+    
+
+}
+
+export const config = {
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - / (root)
+         * - /login
+         * - /api/auth
+         * - /_next/static (static files)
+         * - /_next/image (image optimization files)
+         * - /favicon.ico (favicon file)
+         */
+        '/((?!login|api/auth|_next/static|_next/image|favicon.ico).*)',
+    ],
+};

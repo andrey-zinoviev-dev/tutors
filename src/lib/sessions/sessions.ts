@@ -1,12 +1,24 @@
 'use server';
 import { SignJWT, jwtVerify } from 'jose'
-import { UnifiedUser } from '../features/userSlice';
+// import { UnifiedUser } from '../features/userSlice';
 import { cookies } from 'next/headers'
 
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
 
-export async function encrypt(payload: {user: {id: string, provider: string}, expiresAt: Date}) {
+async function setCookie(name: string, value: string, expiresAt: number) {
+    const cookieStore = await cookies();
+    
+    cookieStore.set(name, value, {
+        httpOnly: true,
+        secure: true,
+        expires: new Date(expiresAt),
+        sameSite: 'lax',
+        path: '/',
+    });
+}
+
+export async function encrypt<T extends Record<string, unknown>>(payload: T) {
     if (!payload) {
         throw new Error('Payload is null');
     }
@@ -31,18 +43,33 @@ export async function decrypt(session: string | undefined = '') {
 
 export async function createSession({id, provider}: {id: string, provider: string}) {
     // console.log('createSession', id, provider)
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-    const session = await encrypt({ user: { id, provider }, expiresAt })
-    const cookieStore = await cookies()
+    const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
+    const session = await encrypt({ user: { id, provider }, expiresAt });
+
+    await setCookie('session', session, expiresAt);
+    // const cookieStore = await cookies()
    
-    cookieStore.set('session', session, {
-      httpOnly: true,
-      secure: true,
-      expires: expiresAt,
-      sameSite: 'lax',
-      path: '/',
-    })
+    // cookieStore.set('session', session, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   expires: expiresAt,
+    //   sameSite: 'lax',
+    //   path: '/',
+    // });
 };
+
+export async function createTokens({access_token, expires_in, refresh_token}: {access_token: string, expires_in: number, refresh_token: string}) {
+    const createdAt =Date.now();
+    const expiresAt = createdAt + expires_in * 1000;
+
+    // //expires_in cookie
+    const expiresInEncrypted = await encrypt({expires_at: expiresAt});
+    await setCookie('expiresInCookie', expiresInEncrypted, expiresAt);
+
+    // //refresh_token cookie
+    const refreshTokenEncrypted = await encrypt({refresh_token})
+    await setCookie('refreshTokenCookie', refreshTokenEncrypted, expiresAt);//the same as expiresAt
+}
 
 export async function getDecodedSession() {
     const cookieStore = await cookies()

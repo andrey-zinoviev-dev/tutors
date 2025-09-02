@@ -23,11 +23,11 @@ export const apiSlice = createApi({
                 },
             }),
         }),
-        createSession: builder.mutation<{ success: boolean }, { id: string, provider: string }>({
-            query: ({ id, provider }) => ({
+        createSession: builder.mutation<{ success: boolean }, { user: { id: string, provider: string }, tokens: { access_token: string, expires_in: number, refresh_token: string } }>({
+            query: ({ user, tokens }) => ({
                 url: '/api/auth/session',
                 method: 'POST',
-                body: { id, provider },
+                body: { user, tokens },
             }),
         }), 
         decodeSession: builder.query<{id: string, provider: string}, void>({
