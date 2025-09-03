@@ -58,22 +58,22 @@ export async function createSession({id, provider}: {id: string, provider: strin
     // });
 };
 
-export async function createTokens({expires_in, refresh_token, deviceId, state}: {expires_in: number, refresh_token: string, deviceId: string, state: string}) {
-    const createdAt =Date.now();
-    const expiresAt = createdAt + expires_in * 1000;
+// export async function createTokens({expires_in, refresh_token, deviceId, state}: {expires_in: number, refresh_token: string, deviceId: string, state: string}) {
+//     const createdAt =Date.now();
+//     const expiresAt = createdAt + expires_in * 1000;
 
-    // //expires_in cookie
-    const expiresInEncrypted = await encrypt({expires_at: expiresAt});
-    await setCookie('expiresInCookie', expiresInEncrypted, expiresAt);
+//     // //expires_in cookie
+//     const expiresInEncrypted = await encrypt({expires_at: expiresAt});
+//     await setCookie('expiresInCookie', expiresInEncrypted, expiresAt);
 
-    // //refresh_token cookie
-    const refreshTokenEncrypted = await encrypt({refresh_token})
-    await setCookie('refreshTokenCookie', refreshTokenEncrypted, expiresAt);
+//     // //refresh_token cookie
+//     const refreshTokenEncrypted = await encrypt({refresh_token})
+//     await setCookie('refreshTokenCookie', refreshTokenEncrypted, expiresAt);
     
-    //device_id cookie
-    const deviceIdEncrypted = await encrypt({device_id: deviceId});
-    await setCookie('deviceIdCookie', deviceIdEncrypted, expiresAt);
-}
+//     //device_id cookie
+//     const deviceIdEncrypted = await encrypt({device_id: deviceId});
+//     await setCookie('deviceIdCookie', deviceIdEncrypted, expiresAt);
+// }
 
 export async function getDecodedSession() {
     const cookieStore = await cookies()
@@ -87,8 +87,8 @@ export async function deleteSession() {
     cookieStore.delete('session')
 }
 
-export async function checkSession() {
-    const cookieStore = await cookies()
-    const session = cookieStore.get('session')?.value;
-    return session;
-}
+// export async function checkSession() {
+//     const cookieStore = await cookies()
+//     const session = cookieStore.get('session')?.value;
+//     return session;
+// }

@@ -1,4 +1,4 @@
-import { createSession, createTokens } from '@/lib/sessions/sessions'
+import { createSession } from '@/lib/sessions/sessions'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
