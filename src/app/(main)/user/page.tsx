@@ -9,7 +9,7 @@ import { deleteSession, getDecodedSession } from "@/lib/sessions/sessions";
 import { redirect } from "next/navigation";
 
 export default async function User() {
-  const { user } = await getDecodedSession() as { user: {id: string, provider: string}};
+  const { id, provider } = await getDecodedSession() as { id: string, provider: string};
   // console.log(user);
   // const user = useSelector((state: RootState) => state.user.user);
   // console.log(user);
@@ -25,8 +25,8 @@ export default async function User() {
   return (
     <div>
       <Link href="/">Главная</Link>
-      <span>User ID: {user?.id}</span>
-      <span>User Provider: {user?.provider}</span>
+      <span>User ID: {id}</span>
+      <span>User Provider: {provider}</span>
       <div>
         {/* <span>У вас пройдено 10 уроков, {userData?.provider}</span> */}
       </div>

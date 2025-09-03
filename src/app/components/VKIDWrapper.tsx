@@ -144,13 +144,12 @@ export default function VKIDWrapper() {
             const deviceId = payload.device_id as string;
 
             VKID.Auth.exchangeCode(code, deviceId)
-              .then(vkidOnSuccess)
+              .then((data) => vkidOnSuccess(data, deviceId))
               .catch(vkidOnError);
             }
           });
         
-          function vkidOnSuccess(data: VKAuthResult) {
-            // console.log(data);
+          function vkidOnSuccess(data: VKAuthResult, deviceId: string) {
             VKID.Auth.userInfo(data.access_token)
               .then((userInfo) => {
                 const userData = userInfo as VKUserInfo;
@@ -160,17 +159,15 @@ export default function VKIDWrapper() {
                   first_name: userData.user.first_name || '',
                   last_name: userData.user.last_name || '',
                   provider: 'vk' as string,
-                  // access_token: data.access_token || '',
-                  // refresh_token: data.refresh_token || '',
               };
               
               // console.log('Unified VK user data:', unifiedUser);
               // dispatch(setUser(unifiedUser));
-              createSession({user: unifiedUser, tokens: {access_token: data.access_token, expires_in: data.expires_in, refresh_token: data.refresh_token}})
+              createSession({id: unifiedUser.id, provider: unifiedUser.provider})
               .unwrap()
               .then((res) => {
                 // console.log(res);
-                // router.push("/user");
+                router.push("/user");
               })
               .catch((err) => {
                 console.log(err);

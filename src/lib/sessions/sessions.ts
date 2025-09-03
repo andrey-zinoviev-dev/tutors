@@ -44,7 +44,7 @@ export async function decrypt(session: string | undefined = '') {
 export async function createSession({id, provider}: {id: string, provider: string}) {
     // console.log('createSession', id, provider)
     const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
-    const session = await encrypt({ user: { id, provider }, expiresAt });
+    const session = await encrypt({id, provider});
 
     await setCookie('session', session, expiresAt);
     // const cookieStore = await cookies()
@@ -58,7 +58,7 @@ export async function createSession({id, provider}: {id: string, provider: strin
     // });
 };
 
-export async function createTokens({access_token, expires_in, refresh_token}: {access_token: string, expires_in: number, refresh_token: string}) {
+export async function createTokens({expires_in, refresh_token, deviceId, state}: {expires_in: number, refresh_token: string, deviceId: string, state: string}) {
     const createdAt =Date.now();
     const expiresAt = createdAt + expires_in * 1000;
 
@@ -68,7 +68,11 @@ export async function createTokens({access_token, expires_in, refresh_token}: {a
 
     // //refresh_token cookie
     const refreshTokenEncrypted = await encrypt({refresh_token})
-    await setCookie('refreshTokenCookie', refreshTokenEncrypted, expiresAt);//the same as expiresAt
+    await setCookie('refreshTokenCookie', refreshTokenEncrypted, expiresAt);
+    
+    //device_id cookie
+    const deviceIdEncrypted = await encrypt({device_id: deviceId});
+    await setCookie('deviceIdCookie', deviceIdEncrypted, expiresAt);
 }
 
 export async function getDecodedSession() {

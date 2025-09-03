@@ -3,9 +3,10 @@ import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
   try {
-    const { user, tokens } = await request.json();
-    const { id, provider } = user;
-    const { access_token, expires_in, refresh_token } = tokens;
+    const { id, provider } = await request.json();
+    // const { id, provider } = user;
+    // const { expires_in, refresh_token } = tokens;
+    // const { device_id, state } = device_state;
     // console.log(access_token, expires_in, refresh_token);
     
     // Validate provider 
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
     
 
     // Create tokens
-    await createTokens({access_token, expires_in, refresh_token});
+    // await createTokens({expires_in, refresh_token, deviceId: device_id, state: state});
 
     // Create session (works for any provider)
     await createSession({id, provider});
